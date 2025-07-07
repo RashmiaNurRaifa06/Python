@@ -21,7 +21,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("TIC TAC TOE")
 screen.fill(BG_COLOR)
 font = pygame.font.Font(None, 60)
-board = [["" for_in range(BOARD_COLS)]  for_in range(BOARD_ROWS)]
+board = [["" for _ in range(BOARD_COLS)]  for _ in range(BOARD_ROWS)]
 
 def draw_lines():
     for i in range(1, BOARD_ROWS):
@@ -79,3 +79,42 @@ def computer_move():
         
 while True:
     for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        if player == 'X':
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouseX = event.pos[0]
+                mouseY = event.pos[1]
+                clicked_row = mouseY // SQUARE_SIZE
+                clicked_col = mouseX // SQUARE_SIZE
+                if board[clicked_row][clicked_col] == "":
+                    board[clicked_row][clicked_col] = player
+                    if check_winner(player):
+                        show_message(f"Player {player} wins!")
+                        restart()
+                        player = 'X'
+                        continue
+                    elif is_full():
+                        show_message("It's a draw!")
+                        restart()
+                        player = 'X'
+                        continue
+                    player = 'O'
+        elif player == 'O':
+            pygame.time.delay(500)
+            computer_move()
+            if check_winner('O'):
+                show_message("Computer 'O' wins!")
+                restart()
+                player = 'X'
+                continue
+            elif is_full():
+                show_message("It's a draw!")
+                restart()
+                player = 'X'
+                continue
+    player = 'X'
+    
+draw_figures()
+pygame.display.update()
