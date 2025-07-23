@@ -64,3 +64,58 @@ class TextEditor:
             self.filename = file
         with open(self.filename, "w", encomding = "utf-8") as f:
             f.write(self.text_area.get(1.0, tk.END))
+            
+    def make_bold(self):
+        self.toggle_tag("bold")
+   
+    def make_italic(self):
+        self.toggle_tag("italic")
+   
+    def make_underline(self):
+        self.toggle_tag("underline")
+        
+    def toggle_tag(self, tag):
+        try:
+            start, end = self.text_area.index("sel.first"), self.text_area.index("sel.last")
+            if tag in self.text_area.tag_names("sel.first"):
+                self.text_area.tag_remove(tag, start, end)
+            else:
+                self.text_area.tag_add(tag, start, end)
+        except tk.TclError:
+            pass
+        
+    def increase_font(self):
+        self.current_font_size += 2
+        self.update_font()
+        
+    def decrease_font(self):
+       if self.current_font_size > 6:
+           self.current_font_size -= 2
+           self.update_font
+           
+    def update_font(self):
+        self.text_font.configure(size = self.current_font_size)
+        self.text_area.configure(font = self.text_font)
+        self.text_area.tag_configure("bold", font = (self.current_font_family, self.current_font_size, "bold"))
+        self.text_area.tag_configure("italic", font = (self.current_font_family, self.current_font_size, "italic"))
+        self.text_area.tag_configure("underline", font = (self.current_font_family, self.current_font_size, "underline"))
+        
+    def change_text_color(self):
+        color = colorchooser.askcolor()[1]
+        if color:
+            try:
+                start, end = self.text_area.index("sel.first"), self.text_area.index("sel.last")
+                self.text_area.tag_add("color", start, end)
+                self.text_area.tag_configure("color", foreground = color)
+            except tk.TclError:
+                pass
+            
+    def change_bg_color(self):
+        color = colorchooser.askcolor()[1]
+        if color:
+            self.text_area.configure(bg = color)
+            
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = TextEditor(root)
+    root.mainloop()
